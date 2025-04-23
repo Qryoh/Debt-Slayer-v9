@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Debt Slayer</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
+  <script src="https://replit.com/public/js/repl-auth-v2.js"></script>
+  
+</head>
+<body>
+  <div id="main-app">
+  <div class="notification-banner">
+    💾 Your data is saved locally in your browser. Don't clear your cookies or use Incognito mode if you want to keep your debt health history.
+    <button class="close-notification" onclick="this.parentElement.classList.add('hidden')">✕</button>
+  </div>
+  <div class="page-container">
+    <div class="floating-panel dashboard-summary">
+      <div class="panel-header">
+        <span>Dashboard Summary</span>
+      </div>
+      <div class="panel-content" id="nextPaymentTimer">Loading next payment...</div>
+    </div>
+
+    <div class="main-content">
+      <div class="mascot">🐉</div>
+      <h1>💰 Debt Slayer</h1>
+
+      <div class="input-section">
+        <div class="mobile-form-header">
+          <button class="mobile-minimize-btn">−</button>
+        </div>
+        <div class="add-debt-button">+ Add New Debt</div>
+        <form id="debt-form">
+    <select id="debtType" required>
+      <option value="" disabled selected>Select Debt Type</option>
+      <option value="Credit Card">Credit Card</option>
+      <option value="Student Loan">Student Loan</option>
+      <option value="Auto Loan">Auto Loan</option>
+      <option value="Home Loan">Home Loan</option>
+      <option value="Medical Debt">Medical Debt</option>
+      <option value="BNPL">Buy Now, Pay Later</option>
+      <option value="Personal Loan">Personal Loan</option>
+    </select>
+    <input type="text" id="debtName" placeholder="Credit Card / Loan Name" required />
+    <input type="number" id="debtAmount" placeholder="Amount Owed ($)" step="0.01" min="0" required />
+    <input type="date" id="dueDate" placeholder="Start / Due Date" required />
+    <input type="number" id="apr" placeholder="APR (%) - optional" step="0.01" />
+    <select id="loanTerm" class="form-input">
+      <option value="" disabled selected>Select Loan Term</option>
+    </select>
+    <div id="introAPRFields" class="intro-apr-container">
+      <label class="checkbox-wrapper">
+        <input type="checkbox" id="hasIntroAPR">
+        <span class="checkbox-label">Intro 0% APR Offer?</span>
+      </label>
+      <input type="number" id="introAPRMonths" class="form-input" placeholder="Months remaining on intro offer (1-24)" min="1" max="24" step="1" />
+      <input type="hidden" id="introAPREndDate">
+    </div>
+    <button type="submit">Add Debt</button>
+  </form>
+
+  <div id="debtList"></div>
+      </div>
+      <div class="debt-history-sidebar"></div>
+    </div>
+  </div>
+
+  <div class="menu-dropdown">
+    <button class="menu-button">☰ Dashboard Tools</button>
+    <div class="menu-content">
+      <button class="menu-back-button" onclick="this.closest('.menu-content').classList.remove('show')">← Back</button>
+      <button class="menu-item mobile-only" data-panel="dashboard-summary" style="font-size: 1.2em; padding: 15px; background: rgba(255,255,255,0.1);">📊 Dashboard Summary</button>
+      <button class="menu-item" data-panel="progress-tracker">📊 Debt Progress</button>
+      <button class="menu-item" data-panel="debt-history">📈 Debt History</button>
+      <button class="menu-item" data-panel="credit-health">💳 Credit Health</button>
+      <button class="menu-item" data-panel="credit-simulator">🎯 Credit Simulator</button>
+      <button class="menu-item" disabled>👤 Account Info (Coming Soon)</button>
+    </div>
+  </div>
+
+  <div class="floating-panel credit-simulator hidden">
+    <div class="panel-header">
+      <span>Credit Simulator</span>
+    </div>
+    <div class="panel-content">
+      <div class="simulator-section">
+        <div class="simulator-card">
+          <label>Current Credit Score</label>
+          <input type="number" id="base-credit-score" min="300" max="850" placeholder="Enter score (300-850)" required>
+          <div id="score-warning" style="display: none; color: #e53e3e; font-size: 0.9em; margin-top: 4px;">
+            Please enter a valid credit score between 300 and 850.
+          </div>
+        </div>
+        <div class="simulator-card">
+          <label>What type of loan do you want to simulate?</label>
+          <select id="loan-type" onchange="updateSimulatorFields()">
+            <option value="" disabled selected>Select loan type</option>
+            <option value="credit-card">Credit Card</option>
+            <option value="auto-loan">Auto Loan</option>
+            <option value="student-loan">Student Loan</option>
+            <option value="personal-loan">Personal Loan</option>
+          </select>
+        </div>
+
+        <div id="dynamic-fields"></div>
+
+        <button id="simulate-btn" onclick="simulateScore()">Simulate Score</button>
+        <div id="simulation-result" class="simulation-result hidden"></div>
+        <button id="reset-btn" onclick="resetSimulator()">Reset Simulator</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-panel progress-tracker hidden">
+    <div class="panel-header">
+      <span>Debt Progress</span>
+    </div>
+    <div class="panel-content">
+    </div>
+  </div>
+
+  <div class="floating-panel debt-history hidden">
+    <div class="panel-header">
+      <span>Debt History</span>
+    </div>
+    <div class="panel-content debt-history">
+      <!-- History content will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <div class="floating-panel credit-health hidden">
+    <div class="panel-header">
+      <span>Credit Health</span>
+    </div>
+    <div class="panel-content">
+      <form id="credit-form">
+        <div class="simulator-card">
+          <label>Credit Score</label>
+          <input type="number" id="creditScore" placeholder="Enter score (300-850)" min="300" max="850" required>
+        </div>
+        <div class="simulator-card">
+          <label>Credit Utilization</label>
+          <input type="number" id="utilization" placeholder="Enter percentage" min="0" max="100" required>
+        </div>
+        <div class="simulator-card">
+          <label>Open Accounts</label>
+          <input type="number" id="accounts" placeholder="Number of accounts" min="0" required>
+        </div>
+        <div class="simulator-card">
+          <label>Credit History</label>
+          <input type="number" id="history" placeholder="Years of history" min="0" required>
+        </div>
+        <button type="submit">Analyze Credit</button>
+      </form>
+      <div id="credit-tips" class="credit-tips"></div>
+    </div>
+  </div>
+
+  <div class="mobile-nav">
+    <div class="mobile-nav-item" onclick="showPanel('add-debt')">
+      <span>💰</span>
+      Add Debt
+    </div>
+    <div class="mobile-nav-item" onclick="showPanel('credit-simulator')">
+      <span>🎯</span>
+      Simulator
+    </div>
+    <div class="mobile-nav-item" onclick="showPanel('debt-history')">
+      <span>📈</span>
+      History
+    </div>
+    <div class="mobile-nav-item" onclick="showPanel('dashboard')">
+      <span>📊</span>
+      Dashboard
+    </div>
+  </div>
+
+  <div class="footer">Built with 💡 by Dante B (TooSqlty)</div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+Top Priorities to Fix on Mobile
+Centered Layout on Load (Default Viewport)
+
+Problem: Elements are pulled left by default and feel unbalanced.
+
+Fix: Center the main content on mobile screens using margin: 0 auto; on containers, and text-align: center where needed. Add a media query to apply these changes under a certain width (max-width: 768px).
+
+Dashboard Summary Placement
+
+Problem: It's floating in the center and clashing with content.
+
+Fix (Option A - Preferred): Move it into the menu as the top item, but bold and style it to stand out.
+
+Fix (Option B): If it must stay outside, dock it to the top and scale it down slightly on mobile with a responsive width (width: 90vw; max-width: 500px;).
+
+Floating Windows & Input Padding
+
+Problem: Some windows and inputs are overlapping or tight on smaller screens.
+
+Fix: Add padding: 10px; and make all floating windows width: 95vw max on mobile. Consider adding box-sizing: border-box globally if not already done.
+
+Add More Breathing Room
+
+Fix: Add vertical spacing with margin-bottom: 20px; or gap: 20px to all vertically stacked components in mobile layout mode.
+
+Set Max-Width for Inputs
+
+Problem: Some inputs are pushing off-screen or not resizing cleanly.
+
+Fix: Use max-width: 100% and width: 100% inside a container with padding: 0 10px to ensure clean flow.
+
+Fix App Title & Welcome Message Clipping
+
+Problem: App title overlaps the alert banner.
+
+Fix: On mobile, shift the welcome banner down by ~40px using margin-top: 60px; and ensure the dragon logo doesn’t collide with text.
+
+Responsive Code Sample (Give This to Replit AI)
+css
+Copy
+Edit
+@media (max-width: 768px) {
+  .floating-panel {
+    width: 95vw;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .dashboard-summary {
+    display: none; /* Optional: hide and move into menu */
+  }
+
+  .menu .dashboard-summary-link {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #facc15;
+  }
+
+  .main-content,
+  .debt-category,
+  .input-section {
+    width: 95%;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .alert-banner {
+    margin-top: 60px;
+  }
+
+  input,
+  select,
+  button {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .menu {
+    width: 100vw;
+    max-width: 100%;
+    padding: 10px;
+  }
+}

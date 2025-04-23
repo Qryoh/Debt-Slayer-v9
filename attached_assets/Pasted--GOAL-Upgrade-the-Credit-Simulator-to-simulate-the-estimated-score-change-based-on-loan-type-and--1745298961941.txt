@@ -1,0 +1,57 @@
+// GOAL: Upgrade the Credit Simulator to simulate the estimated score change based on loan type and action (open new loan or pay off existing loan).
+
+// CONTEXT: 
+// - The current simulator displays a "Simulated Score" based on inputs.
+// - I want to simulate a score *change* (positive or negative) instead, based on the action taken with a specific loan type.
+// - Each loan type should have its own logic for score impact.
+
+// TASK:
+// 1. Update the simulator UI so that after selecting the loan type, the following fields appear conditionally:
+
+//    Credit Card:
+//      - Total Credit Card Debt
+//      - Payoff Amount
+//      - Are you opening a new credit card? (Yes/No)
+//      - Number of currently open credit cards (optional, for bonus logic)
+
+//    Auto Loan:
+//      - Current Balance
+//      - Choose Action: "Open New Auto Loan" or "Pay Off Auto Loan"
+
+//    Student Loan:
+//      - Loan Balance
+//      - Deferment Status: "Paying", "In School", "Deferred"
+//      - Any Missed Payments? Yes/No
+
+// 2. Based on the selected loan type and input values, return a score *change*, not a simulated score. Example result:
+
+//   "Your estimated score change is: -60 points"
+//   "Simulated score: 640" (keep this below for visual reference)
+
+// 3. Use the following logic model to estimate score changes (simplified, based on real-world behaviors):
+
+const creditImpact = {
+  "Credit Card": {
+    payOff: (payoffAmt, totalDebt) => {
+      const utilizationDrop = payoffAmt / totalDebt;
+      if (utilizationDrop >= 0.9) return +30;
+      if (utilizationDrop >= 0.5) return +15;
+      if (utilizationDrop >= 0.25) return +5;
+      return +0;
+    },
+    openNew: (cardsOpen) => cardsOpen >= 5 ? -10 : -5
+  },
+  "Auto Loan": {
+    payOff: (balance) => balance > 1000 ? +10 : +2,
+    openNew: () => -12
+  },
+  "Student Loan": {
+    missedPayment: (status) => status === "Yes" ? -60 : 0,
+    deferment: (status) => status === "In School" ? 0 : status === "Deferred" ? -5 : 0
+  }
+};
+
+// 4. Update simulateScore() to apply this logic based on loan type.
+// 5. Make the score change visually stand out (red for negative, green for positive).
+// 6. If required fields are missing, disable the "Simulate Score" button.
+

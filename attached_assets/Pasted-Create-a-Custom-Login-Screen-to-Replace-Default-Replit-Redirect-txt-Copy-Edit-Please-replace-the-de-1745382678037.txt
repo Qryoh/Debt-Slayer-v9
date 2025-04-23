@@ -1,0 +1,54 @@
+Create a Custom Login Screen to Replace Default Replit Redirect
+
+txt
+Copy
+Edit
+Please replace the default Replit Auth redirect with a custom login screen for Debt Slayer.
+
+1. In `index.html`, create a login container with this structure:
+```html
+<div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; background-color: #1a202c; color: white;">
+  <h1 style="font-size: 2rem; margin-bottom: 10px;">💼 Welcome to Debt Slayer</h1>
+  <p style="font-size: 1rem; margin-bottom: 20px;">Your personalized tool to track debt, monitor credit health, and stay in control of your finances.</p>
+  <button id="custom-login" style="background-color: #facc15; color: #1a202c; padding: 10px 20px; font-weight: bold; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer;">Login to Begin</button>
+  <p style="margin-top: 20px; font-size: 0.9rem;">Version 9.1 Beta</p>
+</div>
+Hide the main app until login is complete:
+
+html
+Copy
+Edit
+<div id="main-app" style="display: none;">
+  <!-- Existing app content -->
+</div>
+In your script file or a new module script, import Replit Auth and write this:
+
+js
+Copy
+Edit
+import { showAuthPopup, getUserInfo } from "https://replit.com/public/js/repl-auth-v2.js";
+
+document.getElementById("custom-login").addEventListener("click", async () => {
+  await showAuthPopup();
+  const user = await getUserInfo();
+
+  if (user) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("main-app").style.display = "block";
+    console.log("Logged in as:", user.name);
+  }
+});
+The login screen should work on both desktop and mobile. Use flexbox centering and make sure all content scales to fit smaller devices.
+
+Do not run getUserInfo() globally — only after the login button is clicked.
+
+yaml
+Copy
+Edit
+
+---
+
+### 🎯 Bonus Options You Can Add Later
+- 👤 “Continue as Guest” button (disabled for now if accounts are required)
+- 💡 Tooltip: “Why do I need to log in?”
+- 🔒 “We don’t store any personal info — this is just to sync your data across devices.”
